@@ -8,6 +8,13 @@ class UsersController < ApplicationController
   
   def index
     @users = User.paginate(page: params[:page])
+    if params[:search].present?
+      @users = User.paginate(page: params[:page]).search(params[:search]) 
+    end
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "閲覧権限がありません。"
+      redirect_to(root_url)
+    end
   end
   
   def show
